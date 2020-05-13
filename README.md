@@ -12,6 +12,8 @@ As described in **FaultSeg: using synthetic datasets to train an end-to-end conv
 
 If you would just like to try out a pretrained example model, then you can download the [pretrained model](https://drive.google.com/drive/folders/1q8sAoLJgbhYHRubzyqMi9KkTeZWXWtNd) and use the 'prediction.ipynb' script to run a demo.
 
+On 05/07/2020, new models are uploaded for testing. Please run predNew.ipynb to test the new models.
+
 ### Dataset
 
 **To train our CNN network, we automatically created 200 pairs of synthetic seismic and corresponding fault volumes, which were shown 
@@ -21,7 +23,7 @@ to be sufficient to train a good fault segmentation network.**
 
 ### Training
 
-Run train3 to start training a new faultSeg model by using the 200 synthetic datasets
+Run train.py to start training a new faultSeg model by using the 200 synthetic datasets
 
 ## Publications
 

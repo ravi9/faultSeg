@@ -1,5 +1,6 @@
 import numpy as np
 import keras
+import random
 from keras.utils import to_categorical
 
 class DataGenerator(keras.utils.Sequence):
@@ -43,17 +44,34 @@ class DataGenerator(keras.utils.Sequence):
   def __data_generation(self, data_IDs_temp):
     'Generates data containing batch_size samples'
     # Initialization
-    X = np.zeros((4, *self.dim, self.n_channels),dtype=np.single)
-    Y = np.zeros((4, *self.dim, self.n_channels),dtype=np.single)
     gx  = np.fromfile(self.dpath+str(data_IDs_temp[0])+'.dat',dtype=np.single)
     fx  = np.fromfile(self.fpath+str(data_IDs_temp[0])+'.dat',dtype=np.single)
     gx = np.reshape(gx,self.dim)
     fx = np.reshape(fx,self.dim)
-    gx = gx-np.min(gx)
-    gx = gx/np.max(gx)
-    gx = gx*255
+    #gmin = np.min(gx)
+    #gmax = np.max(gx)
+    #gx = gx-gmin
+    #gx = gx/(gmax-gmin)
+    #gx = gx*255
+    xm = np.mean(gx)
+    xs = np.std(gx)
+    gx = gx-xm
+    gx = gx/xs
+    gx = np.transpose(gx)
+    fx = np.transpose(fx)
+    #in seismic processing, the dimensions of a seismic array is often arranged as
+    #a[n3][n2][n1] where n1 represnts the vertical dimenstion. This is why we need 
+    #to transpose the array here in python 
     # Generate data
+    X = np.zeros((2, *self.dim, self.n_channels),dtype=np.single)
+    Y = np.zeros((2, *self.dim, self.n_channels),dtype=np.single)
+    X[0,] = np.reshape(gx, (*self.dim,self.n_channels))
+    Y[0,] = np.reshape(fx, (*self.dim,self.n_channels))  
+    X[1,] = np.reshape(np.flipud(gx), (*self.dim,self.n_channels))
+    Y[1,] = np.reshape(np.flipud(fx), (*self.dim,self.n_channels))  
+    '''
     for i in range(4):
-      X[i,] = np.reshape(np.rot90(gx,i,(0,1)), (*self.dim,self.n_channels))
-      Y[i,] = np.reshape(np.rot90(fx,i,(0,1)), (*self.dim,self.n_channels))  
+      X[i,] = np.reshape(np.rot90(gx,i,(2,1)), (*self.dim,self.n_channels))
+      Y[i,] = np.reshape(np.rot90(fx,i,(2,1)), (*self.dim,self.n_channels))  
+    '''
     return X,Y

@@ -17,7 +17,7 @@ from keras.callbacks import ModelCheckpoint, LearningRateScheduler
 from keras import backend as keras
 
 
-def unet(pretrained_weights = None,input_size = (128,128,128,1)):
+def unet(pretrained_weights = None,input_size = (None,None,None,1)):
     inputs = Input(input_size)
     conv1 = Conv3D(16, (3,3,3), activation='relu', padding='same')(inputs)
     conv1 = Conv3D(16, (3,3,3), activation='relu', padding='same')(conv1)
@@ -31,8 +31,8 @@ def unet(pretrained_weights = None,input_size = (128,128,128,1)):
     conv3 = Conv3D(64, (3,3,3), activation='relu', padding='same')(conv3)
     pool3 = MaxPooling3D(pool_size=(2,2,2))(conv3)
 
-    conv4 = Conv3D(512, (3,3,3), activation='relu', padding='same')(pool3)
-    conv4 = Conv3D(512, (3,3,3), activation='relu', padding='same')(conv4)
+    conv4 = Conv3D(128, (3,3,3), activation='relu', padding='same')(pool3)
+    conv4 = Conv3D(128, (3,3,3), activation='relu', padding='same')(conv4)
 
     up5 = concatenate([UpSampling3D(size=(2,2,2))(conv4), conv3], axis=-1)
     conv5 = Conv3D(64, (3,3,3), activation='relu', padding='same')(up5)
@@ -49,8 +49,9 @@ def unet(pretrained_weights = None,input_size = (128,128,128,1)):
     conv8 = Conv3D(1, (1,1,1), activation='sigmoid')(conv7)
 
     model = Model(inputs=[inputs], outputs=[conv8])
-    model.compile(optimizer = Adam(lr = 1e-4), loss = cross_entropy_balanced, metrics = ['accuracy'])
-  
+    model.summary()
+    #model.compile(optimizer = Adam(lr = 1e-4), 
+    #    loss = cross_entropy_balanced, metrics = ['accuracy'])
     return model
 def cross_entropy_balanced(y_true, y_pred):
     # Note: tf.nn.sigmoid_cross_entropy_with_logits expects y_pred is logits, 
